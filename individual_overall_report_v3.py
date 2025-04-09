@@ -52,6 +52,8 @@ list_of_IDs = []
 # Transfer files into dictionnary and create a list of IDs
 for sleep_file in sleep_files:
     sleep_file_name = os.path.splitext(sleep_file)[0]
+    if sleep_file_name[:3] not in list_of_IDs:
+        list_of_IDs.append(sleep_file_name[:3])
     sleep_data[sleep_file_name] = pd.read_csv(os.path.join(sleep_data_folder_path, sleep_file))
 
 for activity_file in activity_files:
@@ -134,7 +136,7 @@ for participant_id in list_of_IDs:
                 activity_df = activity_df.groupby('Date', as_index=False)[['Steps', 'Non_Wear', 'Sleep', 'Sedentary', 'Light', 'Moderate', 'Vigorous']].sum()
 
 
-        
+        redcap_df = None
         for redcap_file_name, df in redcap_data.items():
           if redcap_file_name.endswith(participant_id):
             redcap_df = df
@@ -222,18 +224,24 @@ for participant_id in list_of_IDs:
         # Convert into datetimes again (i know we did it earlier but it seems that it's still strings, so let's just do it again on the contatenated dataframes)
         sleep_df['Night.Starting'] = pd.to_datetime(sleep_df['Night.Starting'])
         activity_df['Date'] = pd.to_datetime(activity_df['Date'])
-        redcap_df['date_phq9'] = pd.to_datetime(redcap_df['date_phq9'])
-        redcap_df['date_gad7'] = pd.to_datetime(redcap_df['date_gad7'])
-        redcap_df['date_cgi-s'] = pd.to_datetime(redcap_df['date_cgi-s'])
-        redcap_df['date_saps-sans'] = pd.to_datetime(redcap_df['date_saps-sans'])
-        redcap_df['date_whodas'] = pd.to_datetime(redcap_df['date_whodas'])
-        redcap_df['date_dast10'] = pd.to_datetime(redcap_df['date_dast10'])
-        redcap_df['date_audit'] = pd.to_datetime(redcap_df['date_audit'])
+
+        if redcap_df is not None:
+            redcap_df['date_phq9'] = pd.to_datetime(redcap_df['date_phq9'])
+            redcap_df['date_gad7'] = pd.to_datetime(redcap_df['date_gad7'])
+            redcap_df['date_cgi-s'] = pd.to_datetime(redcap_df['date_cgi-s'])
+            redcap_df['date_saps-sans'] = pd.to_datetime(redcap_df['date_saps-sans'])
+            redcap_df['date_whodas'] = pd.to_datetime(redcap_df['date_whodas'])
+            redcap_df['date_dast10'] = pd.to_datetime(redcap_df['date_dast10'])
+            redcap_df['date_audit'] = pd.to_datetime(redcap_df['date_audit'])
 
 
         # Initialize lists to hold valid min and max dates
-        min_dates = [sleep_df['Night.Starting'].min(), activity_df['Date'].min(), redcap_df['date_phq9'].min(), redcap_df['date_gad7'].min()]
-        max_dates = [sleep_df['Night.Starting'].max(), activity_df['Date'].max(), redcap_df['date_phq9'].max(), redcap_df['date_gad7'].max()]
+        if redcap_df is not None:
+            min_dates = [sleep_df['Night.Starting'].min(), activity_df['Date'].min(), redcap_df['date_phq9'].min(), redcap_df['date_gad7'].min()]
+            max_dates = [sleep_df['Night.Starting'].max(), activity_df['Date'].max(), redcap_df['date_phq9'].max(), redcap_df['date_gad7'].max()]
+        else:
+            min_dates = [sleep_df['Night.Starting'].min(), activity_df['Date'].min()]
+            max_dates = [sleep_df['Night.Starting'].max(), activity_df['Date'].max()]
 
         # Determine overall min and max date
         min_date = (min(min_dates))
@@ -348,7 +356,7 @@ for participant_id in list_of_IDs:
         markers = ['x' if d.weekday() >= 6 else 'o' for d in sleep_df['Night.Starting']]
 
         # Plot all points with a continuous line
-        axes[0, 0].plot(sleep_df['Night.Starting'], sleep_df['Total.Sleep.Time'], color='#5D3A9B', label='PHQ-9 Scores (x: Sunday)')
+        axes[0, 0].plot(sleep_df['Night.Starting'], sleep_df['Total.Sleep.Time'], color='#5D3A9B', label=r'Sleep Time ($\bf{x: Sunday}$)')
 
         # Overlay markers for weekdays and weekends
         for date, score, marker in zip(sleep_df['Night.Starting'], sleep_df['Total.Sleep.Time'], markers):
@@ -374,33 +382,77 @@ for participant_id in list_of_IDs:
         # Add separator
         add_legend_separator()
 
-        # PHQ-9 Plot
-        phq9_df = redcap_df[['date_phq9', 'phq_9']].dropna()
-        for idx, (zone, limits) in enumerate(phq9_zones.items()):
-            axes[0, 1].axhspan(limits[0], limits[1], color=phq9_colors[idx], alpha=0.3, label=zone)
+        # REDCAP PLOTTING
+        if redcap_df is None:
+            # Set PHQ-9 and GAD-7 subplots as empty
+            axes[0, 1].set_xticks([])
+            axes[0, 1].set_yticks([])
+            axes[0, 1].set_ylabel('PHQ-9 Score')
+            axes[0, 1].set_title('PHQ-9 Scores', fontsize=16, fontweight='bold')
 
 
-        axes[0, 1].plot(phq9_df['date_phq9'], phq9_df['phq_9'], color='blue', label='PHQ-9 Scores')
+            axes[1, 0].set_xticks([])
+            axes[1, 0].set_yticks([])
+            axes[1, 0].set_ylabel('GAD-7 Score')
+            axes[1, 0].set_title('GAD-7 Scores', fontsize=16, fontweight='bold')
+            axes[1, 0].set_xticks(ticks=daily_date_range, labels=[d.strftime('%Y-%m-%d') if d in weekly_date_range else '' for d in daily_date_range], rotation=90)
+            axes[1, 0].set_xlabel('Date')
 
 
-        mean_phq9 = phq9_df['phq_9'].mean()
-        axes[0, 1].axhline(mean_phq9, linestyle='--', color='blue', label=f'Avg PHQ-9 Score: {mean_phq9:.2f}')
-
-        # Add annotations for PHQ-9 values within the filtered data
-        for i, score in enumerate(phq9_df['phq_9']):
-            if pd.notna(score):
-                axes[0, 1].annotate(f'{score:.0f}', 
-                            (phq9_df['date_phq9'].iloc[i], score), 
-                            textcoords="offset points", 
-                            xytext=(0, 10), ha='center')
+        else:
+            # PHQ-9 Plot
+            phq9_df = redcap_df[['date_phq9', 'phq_9']].dropna()
+            for idx, (zone, limits) in enumerate(phq9_zones.items()):
+                axes[0, 1].axhspan(limits[0], limits[1], color=phq9_colors[idx], alpha=0.3, label=zone)
 
 
-        axes[0, 1].set_ylabel('PHQ-9 Score')
-        axes[0, 1].set_xticks(ticks=daily_date_range, labels=[d.strftime('%Y-%m-%d') if d in weekly_date_range else '' for d in daily_date_range],rotation=90)
-        axes[0, 1].set_yticks(np.arange(0, 28, 3))
-        axes[0, 1].set_xlim(x_limits)
-        axes[0, 1].set_ylim(0, 27)
-        axes[0, 1].set_title('PHQ-9 Scores', fontsize=16, fontweight='bold')
+            axes[0, 1].plot(phq9_df['date_phq9'], phq9_df['phq_9'], color='blue', marker='o', label='PHQ-9 Scores')
+
+
+            mean_phq9 = phq9_df['phq_9'].mean()
+            axes[0, 1].axhline(mean_phq9, linestyle='--', color='blue', label=f'Avg PHQ-9 Score: {mean_phq9:.2f}')
+
+            # Add annotations for PHQ-9 values within the filtered data
+            for i, score in enumerate(phq9_df['phq_9']):
+                if pd.notna(score):
+                    axes[0, 1].annotate(f'{score:.0f}', 
+                                (phq9_df['date_phq9'].iloc[i], score), 
+                                textcoords="offset points", 
+                                xytext=(0, 10), ha='center')
+
+
+            axes[0, 1].set_ylabel('PHQ-9 Score')
+            axes[0, 1].set_xticks(ticks=daily_date_range, labels=[d.strftime('%Y-%m-%d') if d in weekly_date_range else '' for d in daily_date_range],rotation=90)
+            axes[0, 1].set_yticks(np.arange(0, 28, 3))
+            axes[0, 1].set_xlim(x_limits)
+            axes[0, 1].set_ylim(0, 27)
+            axes[0, 1].set_title('PHQ-9 Scores', fontsize=16, fontweight='bold')
+
+            # GAD-7 Plot
+            gad7_df = redcap_df[['date_gad7', 'gad_7']].dropna()
+
+            for idx, (zone, limits) in enumerate(gad7_zones.items()):
+                axes[1, 1].axhspan(limits[0], limits[1], color=gad7_colors[idx], alpha=0.3)
+
+            # Plot all points with a continuous line
+            axes[1, 1].plot(gad7_df['date_gad7'], gad7_df['gad_7'], color='#CB6CE6', marker='o', label='GAD-7 Score')
+
+
+
+            mean_gad7 = gad7_df['gad_7'].mean()
+            axes[1, 1].axhline(mean_gad7, linestyle='--', color='#CB6CE6', label=f'Avg GAD-7 Score: {mean_gad7:.2f}')
+
+            # Add annotations for GAD-7 values
+            for i, score in enumerate(gad7_df['gad_7']):
+                if pd.notna(score):
+                    axes[1, 1].annotate(f'{score:.0f}', (gad7_df['date_gad7'].iloc[i], score), textcoords="offset points", xytext=(0,10), ha='center')
+
+            axes[1, 1].set_title('GAD-7 Scores', fontsize=16, fontweight='bold')
+            axes[1, 1].set_ylabel('GAD-7 Score')
+            axes[1, 1].set_ylim(0, 21)
+            axes[1, 1].set_xlim(x_limits)
+            axes[1, 1].set_yticks(np.arange(0, 19, 3))
+            axes[1, 1].set_xticks(ticks=daily_date_range, labels=[d.strftime('%Y-%m-%d') if d in weekly_date_range else '' for d in daily_date_range], rotation=90)
 
         # Custom legend title with detailed info
         title_text = (f'Participant DD_{participant_id}\n\n'
@@ -428,7 +480,9 @@ for participant_id in list_of_IDs:
         markers = ['x' if d.weekday() >= 6 else 'o' for d in activity_df['Date']]
 
         # Plot all points with a continuous line
-        axes[1, 0].plot(activity_df['Date'], activity_df['Steps'], color='#B61826', label='Number of steps (x: Sunday)')
+        axes[1, 0].plot(activity_df['Date'], activity_df['Steps'], color='#B61826', label=r'Number of steps ($\bf{x: Sunday}$)')
+        axes[1, 0].legend(prop={'weight': 'bold'})
+
 
         # Overlay markers for weekdays and weekends
         for date, score, marker in zip(activity_df['Date'], activity_df['Steps'], markers):
@@ -453,34 +507,6 @@ for participant_id in list_of_IDs:
         axes[1, 1].set_xticks(ticks=daily_date_range, labels=[d.strftime('%Y-%m-%d') if d in weekly_date_range else '' for d in daily_date_range], rotation=90)
         axes[1, 0].set_xlabel('Date')
         axes[1, 1].set_xlabel('Date')
-
-
-
-        # GAD-7 Plot
-        gad7_df = redcap_df[['date_gad7', 'gad_7']].dropna()
-
-        for idx, (zone, limits) in enumerate(gad7_zones.items()):
-            axes[1, 1].axhspan(limits[0], limits[1], color=gad7_colors[idx], alpha=0.3)
-
-        # Plot all points with a continuous line
-        axes[1, 1].plot(gad7_df['date_gad7'], gad7_df['gad_7'], color='#CB6CE6', label='GAD-7 Score')
-
-
-
-        mean_gad7 = gad7_df['gad_7'].mean()
-        axes[1, 1].axhline(mean_gad7, linestyle='--', color='#CB6CE6', label=f'Avg GAD-7 Score: {mean_gad7:.2f}')
-
-        # Add annotations for GAD-7 values
-        for i, score in enumerate(gad7_df['gad_7']):
-            if pd.notna(score):
-                axes[1, 1].annotate(f'{score:.0f}', (gad7_df['date_gad7'].iloc[i], score), textcoords="offset points", xytext=(0,10), ha='center')
-
-        axes[1, 1].set_title('GAD-7 Scores', fontsize=16, fontweight='bold')
-        axes[1, 1].set_ylabel('GAD-7 Score')
-        axes[1, 1].set_ylim(0, 21)
-        axes[1, 1].set_xlim(x_limits)
-        axes[1, 1].set_yticks(np.arange(0, 19, 3))
-        axes[1, 1].set_xticks(ticks=daily_date_range, labels=[d.strftime('%Y-%m-%d') if d in weekly_date_range else '' for d in daily_date_range], rotation=90)
 
         # Collect handles and labels
         # We'll show GAD first, then steps
@@ -521,12 +547,9 @@ for participant_id in list_of_IDs:
                 'Information from the watch and questionnaires data since the beginning of the study.\nFrom it, we can track sleep variation, number of steps, depressive symptoms severity (PHQ-9), and anxiety symptoms severity (GAD-7)\nOnly data from the past month are included in the current progress report.',
                 fontsize=25, ha='left')
 
-
-        
-
-
+    
         # Adjust layout
-        plt.subplots_adjust(left=0.3, right=0.95)
+        plt.subplots_adjust(left=0.35, right=0.95)
         plt.savefig(f'../individual_overall_reports/overall_report_DD_{participant_id}.png', dpi=300)
     
 
@@ -622,7 +645,7 @@ for participant_id in list_of_IDs:
             axes[0, 1].axhspan(limits[0], limits[1], color=phq9_colors[idx], alpha=0.3, label=zone)
 
         # Plot all points with a continuous line
-        axes[0, 1].plot(phq9_df['date_phq9'], phq9_df['phq_9'], color='blue', label='PHQ-9 Scores')
+        axes[0, 1].plot(phq9_df['date_phq9'], phq9_df['phq_9'], color='blue', marker='o', label='PHQ-9 Scores')
 
         mean_phq9 = phq9_df['phq_9'].mean()
         axes[0, 1].axhline(mean_phq9, linestyle='--', color='blue', label=f'Avg PHQ-9 Score: {mean_phq9:.2f}')
@@ -661,7 +684,7 @@ for participant_id in list_of_IDs:
             axes[1, 1].axhspan(limits[0], limits[1], color=gad7_colors[idx], alpha=0.3)
 
         # Plot all points with a continuous line
-        axes[1, 1].plot(gad7_df['date_gad7'], gad7_df['gad_7'], color='#CB6CE6', label='GAD-7 Score')
+        axes[1, 1].plot(gad7_df['date_gad7'], gad7_df['gad_7'], color='#CB6CE6', marker='o', label='GAD-7 Score')
 
 
 
@@ -688,7 +711,6 @@ for participant_id in list_of_IDs:
         handles.extend(h)
         labels.extend(l)
 
-        
 
         # Create a single, consolidated legend
         fig.legend(handles, labels, loc='center left', bbox_to_anchor=(0, 0.5), title=title_text, title_fontsize=15, fontsize=15, frameon=True)
@@ -710,9 +732,6 @@ for participant_id in list_of_IDs:
         fig.text(0, 0.78, 
                 'Information from the watch and questionnaires data since the beginning of the study.\nFrom it, we can track sleep variation, number of steps, depressive symptoms severity (PHQ-9), and anxiety symptoms severity (GAD-7)\nOnly data from the past month are included in the current progress report.',
                 fontsize=25, ha='left')
-
-
-        
 
 
         # Adjust layout

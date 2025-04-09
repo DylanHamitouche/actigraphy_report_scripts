@@ -192,7 +192,7 @@ for participant_index in list_participant_ids:
             plt.axhspan(limits[0], limits[1], color=gad7_colors[idx], alpha=0.3, label=zone)
 
         # Plot all points with a continuous line
-        plt.plot(redcap_df['date_gad7'], redcap_df['gad_7'], color='#CB6CE6', label='GAD-7 Scores')
+        plt.plot(redcap_df['date_gad7'], redcap_df['gad_7'], color='#CB6CE6', marker='o', label='GAD-7 Scores')
 
 
         # Add annotations for GAD-7 values
@@ -219,7 +219,7 @@ for participant_index in list_participant_ids:
             plt.axhspan(limits[0], limits[1], color=cgi_colors[idx], alpha=0.3, label=zone)
 
         # Plot all points with a continuous line
-        plt.plot(redcap_df['date_cgi-s'], redcap_df['cgi_s'], color='#009E73', label='CGI-S Scores')
+        plt.plot(redcap_df['date_cgi-s'], redcap_df['cgi_s'], color='#009E73', marker='o', label='CGI-S Scores')
 
         # Add annotations for CGI values
         for i, score in enumerate(redcap_df['cgi_s']):
@@ -391,15 +391,6 @@ for participant_index in list_participant_ids:
 
 
 
-
-
-
-
-
-
-
-
-
 #####################################################################################################
 # If patient has both actigraphy and redcap data
     if activity_df is not None or sleep_df is not None:
@@ -461,7 +452,6 @@ for participant_index in list_participant_ids:
 
         # Apply the adjustment to Sleep Time Onset and Rise Time columns
         sleep_df['Sleep.Onset.Time'] = sleep_df['Sleep.Onset.Time'].apply(lambda x: adjust_sleep_time(x, date_comparator))
-        sleep_df['Rise.Time'] = sleep_df['Rise.Time'].apply(lambda x: adjust_sleep_time(x, date_comparator))
 
         onset_variability = sleep_df['Sleep.Onset.Time'].diff().abs().dt.total_seconds().mean() / 3600  # Convert to hours
         rise_variability = sleep_df['Rise.Time'].diff().abs().dt.total_seconds().mean() / 3600  # Convert to hours
@@ -581,32 +571,32 @@ for participant_index in list_participant_ids:
         #### BATCH 3
         #### THIS SNIPPET ALLOWS TO CONTROL X-AXIS INDIVIDUALLY
         if participant_index == '004':
-            min_date = datetime.strptime("21/10/2024", "%d/%m/%Y")
-            max_date = datetime.strptime("13/01/2025", "%d/%m/%Y")
+            min_date = datetime.strptime("13/01/2025", "%d/%m/%Y")
+            max_date = datetime.strptime("17/02/2025", "%d/%m/%Y")
         
         if participant_index == '005':
-            min_date = datetime.strptime("24/10/2024", "%d/%m/%Y")
-            max_date = datetime.strptime("13/01/2025", "%d/%m/%Y")
+            min_date = datetime.strptime("13/01/2025", "%d/%m/%Y")
+            max_date = datetime.strptime("19/02/2025", "%d/%m/%Y")
 
         if participant_index == '007':
-            min_date = datetime.strptime("12/11/2024", "%d/%m/%Y")
-            max_date = datetime.strptime("30/01/2025", "%d/%m/%Y")
+            min_date = datetime.strptime("27/01/2025", "%d/%m/%Y")
+            max_date = datetime.strptime("04/03/2025", "%d/%m/%Y")
 
         if participant_index == '008':
-            min_date = datetime.strptime("17/10/2024", "%d/%m/%Y")
-            max_date = datetime.strptime("13/01/2025", "%d/%m/%Y")
+            min_date = datetime.strptime("13/01/2025", "%d/%m/%Y")
+            max_date = datetime.strptime("06/03/2025", "%d/%m/%Y")
 
         if participant_index == '009':
-            min_date = datetime.strptime("2/11/2024", "%d/%m/%Y")
-            max_date = datetime.strptime("24/01/2025", "%d/%m/%Y")
+            min_date = datetime.strptime("21/01/2025", "%d/%m/%Y")
+            max_date = datetime.strptime("03/02/2025", "%d/%m/%Y")
 
         if participant_index == '010':
             min_date = datetime.strptime("12/11/2024", "%d/%m/%Y")
             max_date = datetime.strptime("21/01/2025", "%d/%m/%Y")
 
         if participant_index == '014':
-            min_date = datetime.strptime("04/12/2024", "%d/%m/%Y")
-            max_date = datetime.strptime("24/01/2025", "%d/%m/%Y")
+            min_date = datetime.strptime("19/01/2025", "%d/%m/%Y")
+            max_date = datetime.strptime("28/02/2025", "%d/%m/%Y")
         
         if participant_index == '015':
             min_date = datetime.strptime("28/09/2024", "%d/%m/%Y")
@@ -661,7 +651,7 @@ for participant_index in list_participant_ids:
             for idx, (zone, limits) in enumerate(gad7_zones.items()):
                 plt.axhspan(limits[0], limits[1], color=gad7_colors[idx], alpha=0.3, label=zone)
 
-            plt.plot(redcap_df['date_gad7'], redcap_df['gad_7'], color='#CB6CE6', label='GAD-7 Scores')
+            plt.plot(filtered_gad7_df['date_gad7'], filtered_gad7_df['gad_7'], color='#CB6CE6', marker='o', label='GAD-7 Scores')
 
             # Add annotations for GAD-7 values
             for i, score in enumerate(filtered_gad7_df['gad_7']):
@@ -689,7 +679,7 @@ for participant_index in list_participant_ids:
                 plt.axhspan(limits[0], limits[1], color=cgi_colors[idx], alpha=0.3, label=zone)
 
             # Plot all points with a continuous line
-            plt.plot(filtered_cgis_df['date_cgi-s'], filtered_cgis_df['cgi_s'], color='#009E73', label='CGI-S Scores')
+            plt.plot(filtered_cgis_df['date_cgi-s'], filtered_cgis_df['cgi_s'], color='#009E73', marker='o', label='CGI-S Scores')
 
             # Add annotations for CGI values
             for i, score in enumerate(filtered_cgis_df['cgi_s']):
@@ -930,10 +920,18 @@ for participant_index in list_participant_ids:
                 'Mean Sleep Time Onset (Weekdays)', 'Mean Sleep Time Onset (Weekends)', 'Sleep Time Onset Variability', 'Mean Rise Time',
                 'Mean Rise Time (Weekdays)', 'Mean Rise Time (Weekends)', 'Rise Time Variability', 'Average Sleep Efficiency', 'Average Sleep Efficiency (Weekdays)', 'Average Sleep Efficiency (Weekends)'
             ],
-            'Results': [ metrics_df['mean_sleep_time_onset'],
-                metrics_df['mean_sleep_time_onset_weekdays'], metrics_df['mean_sleep_time_onset_weekends'], metrics_df['sleep_time_onset_variability'], metrics_df['mean_rise_time'],
-                metrics_df['mean_rise_time_weekdays'], metrics_df['mean_rise_time_weekends'], metrics_df['rise_time_variability'], metrics_df['avg_sleep_efficiency'],
-                metrics_df['avg_sleep_efficiency_weekdays'], metrics_df['avg_sleep_efficiency_weekends']
+            'Results': [ 
+                metrics_df['mean_sleep_time_onset'],
+                metrics_df['mean_sleep_time_onset_weekdays'],
+                metrics_df['mean_sleep_time_onset_weekends'],
+                metrics_df['sleep_time_onset_variability'] + ' hours',
+                metrics_df['mean_rise_time'],
+                metrics_df['mean_rise_time_weekdays'],
+                metrics_df['mean_rise_time_weekends'],
+                metrics_df['rise_time_variability'] + ' hours',
+                metrics_df['avg_sleep_efficiency'] + '%',
+                metrics_df['avg_sleep_efficiency_weekdays'] + '%',
+                metrics_df['avg_sleep_efficiency_weekends'] + '%'
             ]
         }
         sleep_metrics_df = pd.DataFrame(sleep_metrics)
@@ -947,10 +945,18 @@ for participant_index in list_participant_ids:
                 'Average Vigorous Activity', 'Average Vigorous Activity (Weekdays)', 'Average Vigorous Activity (Weekends)'
             ],
             'Results': [
-                metrics_df['avg_sedentary_activity'], metrics_df['avg_sedentary_activity_weekdays'], metrics_df['avg_sedentary_activity_weekends'],
-                metrics_df['avg_light_activity'], metrics_df['avg_light_activity_weekdays'], metrics_df['avg_light_activity_weekends'],
-                metrics_df['avg_moderate_activity'], metrics_df['avg_moderate_activity_weekdays'], metrics_df['avg_moderate_activity_weekends'],
-                metrics_df['avg_vigorous_activity'], metrics_df['avg_vigorous_activity_weekdays'], metrics_df['avg_vigorous_activity_weekends']
+                metrics_df['avg_sedentary_activity'] + ' hours',
+                metrics_df['avg_sedentary_activity_weekdays'] + ' hours',
+                metrics_df['avg_sedentary_activity_weekends'] + ' hours',
+                metrics_df['avg_light_activity'] + ' hours',
+                metrics_df['avg_light_activity_weekdays'] + ' hours',
+                metrics_df['avg_light_activity_weekends'] + ' hours',
+                metrics_df['avg_moderate_activity'] + ' hours',
+                metrics_df['avg_moderate_activity_weekdays'] + ' hours',
+                metrics_df['avg_moderate_activity_weekends'] + ' hours',
+                metrics_df['avg_vigorous_activity'] + ' hours', 
+                metrics_df['avg_vigorous_activity_weekdays'] + ' hours', 
+                metrics_df['avg_vigorous_activity_weekends'] + ' hours'
             ]
         }
 
