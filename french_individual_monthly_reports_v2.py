@@ -14,15 +14,15 @@ from matplotlib import rcParams
 
 
 # DEFINE ZONES CUT-OFFS FOR REDCAP QUESTIONNAIRES
-phq9_zones = {'Minimal': (0, 5), 'Mild': (5, 10), 'Moderate': (10, 15), 'Moderately Severe': (15, 20), 'Severe': (20, 27)}
+phq9_zones = {'Minimale': (0, 5), 'Légère': (5, 10), 'Modérée': (10, 15), 'Modérément Sévère': (15, 20), 'Sévère': (20, 27)}
 phq9_colors = ['green', 'yellow', 'orange', 'red', 'darkred']
-gad7_zones = {'Minimal': (0, 5), 'Mild': (5, 11), 'Moderate': (11, 15), 'Severe': (15, 21)}
+gad7_zones = {'Minimale': (0, 5), 'Légère': (5, 11), 'Modérément Sévère': (11, 15), 'Sévère': (15, 21)}
 gad7_colors = ['green', 'yellow', 'orange', 'red']
-cgi_zones = {'Normal, not at all ill': (0, 1.5), 'Borderline ill': (1.5, 2.5), 'Midly ill': (2.5, 3.5), 'Moderately ill': (3.5, 4.5), 'Markedly ill': (4.5, 5.5), 'Severly ill': (5.5, 6.5), 'Among the most ill patients': (6.5, 7.5)}
+cgi_zones = {'Normal, pas malade du tout': (0, 1.5), 'À peine malade': (1.5, 2.5), 'Légèrement malade': (2.5, 3.5), 'Modérément malade': (3.5, 4.5), 'Significativement malade': (4.5, 5.5), 'Sévèrement malade': (5.5, 6.5), 'Parmi les patients les plus malades': (6.5, 7.5)}
 cgi_colors = ['lightgreen', 'green', 'yellow', 'orange', 'red', 'darkred', 'black']
-saps_sans_global_zones = {'Low Symptom Burden': (0,30), 'Moderate Symptom Burden': (30,60), 'Severe Symptom Burden': (60,101)}
+saps_sans_global_zones = {'Charge symptomatique basse': (0,30), 'Charge symptomatique modérée': (30,60), 'Charge symptomatique sévère': (60,101)}
 saps_sans_global_colors = ['green', 'yellow', 'red']
-saps_sans_symptoms_zones = {'Not at all': (0,0.5), 'Questionable': (0.5,1.5), 'Mild': (1.5,2.5), 'Moderate': (2.5,3.5), 'Marked': (3.5,4.5), 'Severe': (4.5, 5.5)}
+saps_sans_symptoms_zones = {'Pas du tout': (0,0.5), 'Questionnable': (0.5,1.5), 'Lègére': (1.5,2.5), 'Modérée': (2.5,3.5), 'Significatif': (3.5,4.5), 'Sévère': (4.5, 5.5)}
 saps_sans_symptoms_colors = ['lightgreen', 'green', 'yellow', 'orange', 'red', 'darkred']
 
 
@@ -187,7 +187,7 @@ for participant_index in list_participant_ids:
         for idx, (zone, limits) in enumerate(phq9_zones.items()):
             plt.axhspan(limits[0], limits[1], color=phq9_colors[idx], alpha=0.3, label=zone)
 
-        plt.plot(filtered_phq9_df['date_phq9'], filtered_phq9_df['phq_9'], marker='o', color='blue', label='PHQ-9 Scores')
+        plt.plot(filtered_phq9_df['date_phq9'], filtered_phq9_df['phq_9'], marker='o', color='blue', label='Scores PHQ-9')
 
 
         # Add annotations for PHQ-9 values within the filtered data
@@ -198,7 +198,7 @@ for participant_index in list_participant_ids:
                             textcoords="offset points", 
                             xytext=(0, 10), ha='center')
 
-        plt.ylabel('PHQ-9 Score')
+        plt.ylabel('Score PHQ-9')
         plt.ylim(0, 27)
         plt.xlim(x_limits)
         plt.xticks(ticks=daily_date_range, labels=[d.strftime('%Y-%m-%d') if d in weekly_date_range else '' for d in daily_date_range],rotation=90)
@@ -215,7 +215,7 @@ for participant_index in list_participant_ids:
             plt.axhspan(limits[0], limits[1], color=gad7_colors[idx], alpha=0.3, label=zone)
 
         # Plot all points with a continuous line
-        plt.plot(redcap_df['date_gad7'], redcap_df['gad_7'], color='#CB6CE6', marker='o', label='GAD-7 Scores')
+        plt.plot(redcap_df['date_gad7'], redcap_df['gad_7'], color='#CB6CE6', marker='o', label='Score GAD-7s')
 
 
         # Add annotations for GAD-7 values
@@ -223,7 +223,7 @@ for participant_index in list_participant_ids:
             if pd.notna(score):
                 plt.annotate(f'{score:.0f}', (redcap_df['date_gad7'].iloc[i], score), textcoords="offset points", xytext=(0,10), ha='center')
 
-        plt.ylabel('GAD-7 Score')
+        plt.ylabel('Score GAD-7')
         plt.ylim(0, 21)
         plt.xlim(x_limits)
         plt.yticks(np.arange(0, 19, 3))
@@ -242,14 +242,14 @@ for participant_index in list_participant_ids:
             plt.axhspan(limits[0], limits[1], color=cgi_colors[idx], alpha=0.3, label=zone)
 
         # Plot all points with a continuous line
-        plt.plot(redcap_df['date_cgis'], redcap_df['cgi_s'], color='#009E73', marker='o', label='CGI-S Scores')
+        plt.plot(redcap_df['date_cgis'], redcap_df['cgi_s'], color='#009E73', marker='o', label='Scores CGI-S')
 
         # Add annotations for CGI values
         for i, score in enumerate(redcap_df['cgi_s']):
             if pd.notna(score):
                 plt.annotate(f'{score:.0f}', (redcap_df['date_cgis'].iloc[i], score), textcoords="offset points", xytext=(0,10), ha='center')
 
-        plt.ylabel('CGI-S Score')
+        plt.ylabel('Score CGI-S')
         plt.ylim(0, 7)
         plt.xlim(x_limits)
         plt.yticks(np.arange(0, 8, 1))
@@ -662,7 +662,7 @@ for participant_index in list_participant_ids:
             for idx, (zone, limits) in enumerate(phq9_zones.items()):
                 plt.axhspan(limits[0], limits[1], color=phq9_colors[idx], alpha=0.3, label=zone)
 
-            plt.plot(filtered_phq9_df['date_phq9'], filtered_phq9_df['phq_9'], marker='o', color='blue', label='PHQ-9 Scores')
+            plt.plot(filtered_phq9_df['date_phq9'], filtered_phq9_df['phq_9'], marker='o', color='blue', label='Scores PHQ-9')
 
             # Add annotations for PHQ-9 values within the filtered data
             for i, score in enumerate(filtered_phq9_df['phq_9']):
@@ -672,7 +672,7 @@ for participant_index in list_participant_ids:
                                 textcoords="offset points", 
                                 xytext=(0, 10), ha='center')
 
-            plt.ylabel('PHQ-9 Score')
+            plt.ylabel('Score PHQ-9')
             plt.ylim(0, 27)
             plt.xlim(x_limits)
             plt.xticks(ticks=daily_date_range, labels=[d.strftime('%Y-%m-%d') if d in weekly_date_range else '' for d in daily_date_range],rotation=90)
@@ -688,14 +688,14 @@ for participant_index in list_participant_ids:
             for idx, (zone, limits) in enumerate(gad7_zones.items()):
                 plt.axhspan(limits[0], limits[1], color=gad7_colors[idx], alpha=0.3, label=zone)
 
-            plt.plot(filtered_gad7_df['date_gad7'], filtered_gad7_df['gad_7'], color='#CB6CE6', marker='o', label='GAD-7 Scores')
+            plt.plot(filtered_gad7_df['date_gad7'], filtered_gad7_df['gad_7'], color='#CB6CE6', marker='o', label='Score GAD-7s')
 
             # Add annotations for GAD-7 values
             for i, score in enumerate(filtered_gad7_df['gad_7']):
                 if pd.notna(score):
                     plt.annotate(f'{score:.0f}', (filtered_gad7_df['date_gad7'].iloc[i], score), textcoords="offset points", xytext=(0,10), ha='center')
 
-            plt.ylabel('GAD-7 Score')
+            plt.ylabel('Score GAD-7')
             plt.ylim(0, 21)
             plt.xlim(x_limits)
             plt.yticks(np.arange(0, 19, 3))
@@ -716,14 +716,14 @@ for participant_index in list_participant_ids:
                 plt.axhspan(limits[0], limits[1], color=cgi_colors[idx], alpha=0.3, label=zone)
 
             # Plot all points with a continuous line
-            plt.plot(filtered_cgis_df['date_cgis'], filtered_cgis_df['cgi_s'], color='#009E73', marker='o', label='CGI-S Scores')
+            plt.plot(filtered_cgis_df['date_cgis'], filtered_cgis_df['cgi_s'], color='#009E73', marker='o', label='Scores CGI-S')
 
             # Add annotations for CGI values
             for i, score in enumerate(filtered_cgis_df['cgi_s']):
                 if pd.notna(score):
                     plt.annotate(f'{score:.0f}', (filtered_cgis_df['date_cgis'].iloc[i], score), textcoords="offset points", xytext=(0,10), ha='center')
 
-            plt.ylabel('CGI-S Score')
+            plt.ylabel('Score CGI-S')
             plt.ylim(0, 7)
             plt.xlim(x_limits)
             plt.yticks(np.arange(0, 8, 1))
@@ -808,7 +808,7 @@ for participant_index in list_participant_ids:
         markers = ['x' if d.weekday() >= 6 else 'o' for d in sleep_df['Night.Starting']]
 
         # Plot all points with a continuous line
-        plt.plot(sleep_df['Night.Starting'], sleep_df['Total.Sleep.Time'], color='#5D3A9B', label='Sleep Duration (x: Sunday)')
+        plt.plot(sleep_df['Night.Starting'], sleep_df['Total.Sleep.Time'], color='#5D3A9B', label='Durée du sommeil (x: Dimanche)')
 
         # Overlay markers for weekdays and weekends
         for date, sleep_time, marker in zip(sleep_df['Night.Starting'], sleep_df['Total.Sleep.Time'], markers):
@@ -819,13 +819,13 @@ for participant_index in list_participant_ids:
         avg_sleep_weekdays = sleep_df[sleep_df["Night.Starting"].dt.weekday < 5]["Total.Sleep.Time"].mean()
         avg_sleep_weekends = sleep_df[sleep_df["Night.Starting"].dt.weekday >= 5]["Total.Sleep.Time"].mean()
 
-        plt.axhline(avg_sleep, linestyle='-', color='#5D3A9B', label=f'Avg Sleep Duration (total): {avg_sleep:.2f} hrs')
-        plt.axhline(avg_sleep_weekdays, linestyle='--', color='#5D3A9B', label=f'Avg Sleep Duration (weekdays): {avg_sleep_weekdays:.2f} hrs')
-        plt.axhline(avg_sleep_weekends, linestyle=':', color='#5D3A9B', label=f'Avg Sleep Duration (weekends): {avg_sleep_weekends:.2f} hrs')
+        plt.axhline(avg_sleep, linestyle='-', color='#5D3A9B', label=f'Durée moyenne du sommeil (total): {avg_sleep:.2f} h')
+        plt.axhline(avg_sleep_weekdays, linestyle='--', color='#5D3A9B', label=f'Durée moyenne du sommeil (semaine): {avg_sleep_weekdays:.2f} h')
+        plt.axhline(avg_sleep_weekends, linestyle=':', color='#5D3A9B', label=f'Durée moyenne du sommeil (fin de semaine): {avg_sleep_weekends:.2f} h')
 
         # Add this in arguments of plt.legend() if you want the legend to be outside of the plot: loc='upper left', bbox_to_anchor=(1, 1)
-        plt.legend(title=f'Daily Sleep Duration Variability: {sleep_variability:.2f} hrs')
-        plt.ylabel('Time (Hours)')
+        plt.legend(title=f'Variabilité quotidienne de la durée du sommeil: {sleep_variability:.2f} h')
+        plt.ylabel('Temps (Heures)')
         plt.xticks(ticks=daily_date_range, labels=[d.strftime('%Y-%m-%d') if d in weekly_date_range else '' for d in daily_date_range], rotation=90)
         plt.xlim(x_limits)
         plt.tight_layout()
@@ -863,7 +863,7 @@ for participant_index in list_participant_ids:
         # for col, color in zip(activity_cols, colors):
         #     plt.plot(activity_df['Date'], activity_df[col], label=col, color=color, marker='o', markersize=5)
         #     avg_value = activity_df[col].mean()
-        #     plt.axhline(avg_value, linestyle='--', color=color, label=f'Avg {col}: {avg_value:.2f} hrs')
+        #     plt.axhline(avg_value, linestyle='--', color=color, label=f'Avg {col}: {avg_value:.2f} h')
 
         # # Add legend and labels
         # plt.legend(loc='upper left', bbox_to_anchor=(1, 1))
@@ -889,7 +889,7 @@ for participant_index in list_participant_ids:
         markers = ['x' if d.weekday() >= 6 else 'o' for d in activity_df['Date']]
 
         # Plot all points with a continuous line
-        plt.plot(activity_df['Date'], activity_df['Steps'], color='#B61826', label='Steps (x: Sunday)')
+        plt.plot(activity_df['Date'], activity_df['Steps'], color='#B61826', label='Nombre de pas (x: Dimanche)')
 
         # Overlay markers for weekdays and weekends
         for i, (date, steps, marker) in enumerate(zip(activity_df['Date'], activity_df['Steps'], markers)):
@@ -899,13 +899,13 @@ for participant_index in list_participant_ids:
         avg_steps_weekdays = activity_df[activity_df["Date"].dt.weekday < 5]["Steps"].mean()
         avg_steps_weekends = activity_df[activity_df["Date"].dt.weekday >= 5]["Steps"].mean()
 
-        plt.axhline(avg_steps, linestyle='-', color='#B61826', label=f'Avg Steps (total): {avg_steps:.0f}')
-        plt.axhline(avg_steps_weekdays, linestyle='--', color='#B61826', label=f'Avg Steps (weekdays): {avg_steps_weekdays:.0f}')
-        plt.axhline(avg_steps_weekends, linestyle=':', color='#B61826', label=f'Avg Steps (weekends): {avg_steps_weekends:.0f}')
+        plt.axhline(avg_steps, linestyle='-', color='#B61826', label=f'Nombre moyen de pas (total): {avg_steps:.0f}')
+        plt.axhline(avg_steps_weekdays, linestyle='--', color='#B61826', label=f'Nombre moyen de pas (semaine): {avg_steps_weekdays:.0f}')
+        plt.axhline(avg_steps_weekends, linestyle=':', color='#B61826', label=f'Nombre moyen de pas (fin de semaine): {avg_steps_weekends:.0f}')
 
 
-        plt.legend(title=f'Steps Variability: {steps_variability:.0f} steps')
-        plt.ylabel('Steps')
+        plt.legend(title=f'Variabilité nombre de pas: {steps_variability:.0f} steps')
+        plt.ylabel('Nombre de pas')
         plt.xticks(ticks=daily_date_range, labels=[d.strftime('%Y-%m-%d') if d in weekly_date_range else '' for d in daily_date_range], rotation=90)
         plt.xlim(x_limits)
         plt.tight_layout()

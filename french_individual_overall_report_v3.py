@@ -17,9 +17,9 @@ from matplotlib import rcParams
 pd.set_option('display.max_rows', None)
 
 # DEFINE ZONES CUT-OFFS FOR REDCAP QUESTIONNAIRES
-phq9_zones = {'Minimal': (0, 5), 'Mild': (5, 10), 'Moderate': (10, 15), 'Moderately Severe': (15, 20), 'Severe': (20, 27)}
+phq9_zones = {'Minimale': (0, 5), 'Légère': (5, 10), 'Modérée': (10, 15), 'Modérément Sévère': (15, 20), 'Sévère': (20, 27)}
 phq9_colors = ['green', 'yellow', 'orange', 'red', 'darkred']
-gad7_zones = {'Minimal': (0, 5), 'Mild': (5, 11), 'Moderate': (11, 15), 'Severe': (15, 21)}
+gad7_zones = {'Minimale': (0, 5), 'Légère': (5, 11), 'Modérée': (11, 15), 'Sévère': (15, 21)}
 gad7_colors = ['green', 'yellow', 'orange', 'red']
 
 # Set the font globally
@@ -357,7 +357,7 @@ for participant_id in list_of_IDs:
         markers = ['x' if d.weekday() >= 6 else 'o' for d in sleep_df['Night.Starting']]
 
         # Plot all points with a continuous line
-        axes[0, 0].plot(sleep_df['Night.Starting'], sleep_df['Total.Sleep.Time'], color='#5D3A9B', label=r'Sleep Time ($\bf{x: Sunday}$)')
+        axes[0, 0].plot(sleep_df['Night.Starting'], sleep_df['Total.Sleep.Time'], color='#5D3A9B', label=r'Sleep Time ($\bf{x: Dimanche}$)')
 
         # Overlay markers for weekdays and weekends
         for date, score, marker in zip(sleep_df['Night.Starting'], sleep_df['Total.Sleep.Time'], markers):
@@ -368,12 +368,12 @@ for participant_id in list_of_IDs:
         avg_sleep_weekdays = sleep_df[sleep_df["Night.Starting"].dt.weekday < 5]["Total.Sleep.Time"].mean()
         avg_sleep_weekends = sleep_df[sleep_df["Night.Starting"].dt.weekday >= 5]["Total.Sleep.Time"].mean()
 
-        axes[0, 0].axhline(avg_sleep, linestyle='-', color='#5D3A9B', label=f'Avg Sleep Duration (total): {avg_sleep:.2f} hrs')
-        axes[0, 0].axhline(avg_sleep_weekdays, linestyle='--', color='#5D3A9B', label=f'Avg Sleep Duration (weekdays): {avg_sleep_weekdays:.2f} hrs')
-        axes[0, 0].axhline(avg_sleep_weekends, linestyle=':', color='#5D3A9B', label=f'Avg Sleep Duration (weekends): {avg_sleep_weekends:.2f} hrs')
+        axes[0, 0].axhline(avg_sleep, linestyle='-', color='#5D3A9B', label=f'Durée moyenne du sommeil (total): {avg_sleep:.2f} h')
+        axes[0, 0].axhline(avg_sleep_weekdays, linestyle='--', color='#5D3A9B', label=f'Durée moyenne du sommeil (semaine): {avg_sleep_weekdays:.2f} h')
+        axes[0, 0].axhline(avg_sleep_weekends, linestyle=':', color='#5D3A9B', label=f'Durée moyenne du sommeil (fin de semaine): {avg_sleep_weekends:.2f} h')
 
-        axes[0, 0].set_ylabel('Time (Hours)')
-        axes[0, 0].set_title('Sleep', fontsize=16, fontweight='bold')
+        axes[0, 0].set_ylabel('Temps (Heures)')
+        axes[0, 0].set_title('Sommeil', fontsize=16, fontweight='bold')
 
         # Collect handles and labels
         h, l = axes[0, 0].get_legend_handles_labels()
@@ -388,14 +388,14 @@ for participant_id in list_of_IDs:
             # Set PHQ-9 and GAD-7 subplots as empty
             axes[0, 1].set_xticks([])
             axes[0, 1].set_yticks([])
-            axes[0, 1].set_ylabel('PHQ-9 Score')
-            axes[0, 1].set_title('PHQ-9 Scores', fontsize=16, fontweight='bold')
+            axes[0, 1].set_ylabel('Score PHQ-9')
+            axes[0, 1].set_title('Scores PHQ-9', fontsize=16, fontweight='bold')
 
 
             axes[1, 0].set_xticks([])
             axes[1, 0].set_yticks([])
-            axes[1, 0].set_ylabel('GAD-7 Score')
-            axes[1, 0].set_title('GAD-7 Scores', fontsize=16, fontweight='bold')
+            axes[1, 0].set_ylabel('Score GAD-7')
+            axes[1, 0].set_title('Scores GAD-7', fontsize=16, fontweight='bold')
             axes[1, 0].set_xticks(ticks=daily_date_range, labels=[d.strftime('%Y-%m-%d') if d in weekly_date_range else '' for d in daily_date_range], rotation=90)
             axes[1, 0].set_xlabel('Date')
 
@@ -407,11 +407,11 @@ for participant_id in list_of_IDs:
                 axes[0, 1].axhspan(limits[0], limits[1], color=phq9_colors[idx], alpha=0.3, label=zone)
 
 
-            axes[0, 1].plot(phq9_df['date_phq9'], phq9_df['phq_9'], color='blue', marker='o', label='PHQ-9 Scores')
+            axes[0, 1].plot(phq9_df['date_phq9'], phq9_df['phq_9'], color='blue', marker='o', label='Scores PHQ-9')
 
 
             mean_phq9 = phq9_df['phq_9'].mean()
-            axes[0, 1].axhline(mean_phq9, linestyle='--', color='blue', label=f'Avg PHQ-9 Score: {mean_phq9:.2f}')
+            axes[0, 1].axhline(mean_phq9, linestyle='--', color='blue', label=f'Score PHQ-9 Moyen: {mean_phq9:.2f}')
 
             # Add annotations for PHQ-9 values within the filtered data
             for i, score in enumerate(phq9_df['phq_9']):
@@ -422,12 +422,12 @@ for participant_id in list_of_IDs:
                                 xytext=(0, 10), ha='center')
 
 
-            axes[0, 1].set_ylabel('PHQ-9 Score')
+            axes[0, 1].set_ylabel('Score PHQ-9')
             axes[0, 1].set_xticks(ticks=daily_date_range, labels=[d.strftime('%Y-%m-%d') if d in weekly_date_range else '' for d in daily_date_range],rotation=90)
             axes[0, 1].set_yticks(np.arange(0, 28, 3))
             axes[0, 1].set_xlim(x_limits)
             axes[0, 1].set_ylim(0, 27)
-            axes[0, 1].set_title('PHQ-9 Scores', fontsize=16, fontweight='bold')
+            axes[0, 1].set_title('Scores PHQ-9', fontsize=16, fontweight='bold')
 
             # GAD-7 Plot
             gad7_df = redcap_df[['date_gad7', 'gad_7']].dropna()
@@ -436,20 +436,20 @@ for participant_id in list_of_IDs:
                 axes[1, 1].axhspan(limits[0], limits[1], color=gad7_colors[idx], alpha=0.3)
 
             # Plot all points with a continuous line
-            axes[1, 1].plot(gad7_df['date_gad7'], gad7_df['gad_7'], color='#CB6CE6', marker='o', label='GAD-7 Score')
+            axes[1, 1].plot(gad7_df['date_gad7'], gad7_df['gad_7'], color='#CB6CE6', marker='o', label='Score GAD-7')
 
 
 
             mean_gad7 = gad7_df['gad_7'].mean()
-            axes[1, 1].axhline(mean_gad7, linestyle='--', color='#CB6CE6', label=f'Avg GAD-7 Score: {mean_gad7:.2f}')
+            axes[1, 1].axhline(mean_gad7, linestyle='--', color='#CB6CE6', label=f'Score GAD-7 Moyen: {mean_gad7:.2f}')
 
             # Add annotations for GAD-7 values
             for i, score in enumerate(gad7_df['gad_7']):
                 if pd.notna(score):
                     axes[1, 1].annotate(f'{score:.0f}', (gad7_df['date_gad7'].iloc[i], score), textcoords="offset points", xytext=(0,10), ha='center')
 
-            axes[1, 1].set_title('GAD-7 Scores', fontsize=16, fontweight='bold')
-            axes[1, 1].set_ylabel('GAD-7 Score')
+            axes[1, 1].set_title('Scores GAD-7', fontsize=16, fontweight='bold')
+            axes[1, 1].set_ylabel('Score GAD-7')
             axes[1, 1].set_ylim(0, 21)
             axes[1, 1].set_xlim(x_limits)
             axes[1, 1].set_yticks(np.arange(0, 19, 3))
@@ -457,16 +457,18 @@ for participant_id in list_of_IDs:
 
         # Custom legend title with detailed info
         title_text = (f'Participant DD_{participant_id}\n\n'
-                      'Note: Days of weekend are Saturday and Sunday,\n while nights are Friday nights (leading to Saturday morning)\n and Saturday nights (leading to Sunday morning)\n\n'
-            f'Daily Sleep Duration Variability: {sleep_variability:.2f} hrs\n\n'
-            f'Mean Sleep Time Onset (total): {final_mean_onset.strftime("%H:%M")}\n'
-            f'Mean Sleep Time Onset (weekdays): {mean_sleep_onset_weekdays}\n'
-            f'Mean Sleep Time Onset (weekends): {mean_sleep_onset_weekends}\n'
-            f'Daily Variability Sleep Time Onset: {onset_variability:.2f} hrs\n\n'
-            f'Mean Rise Time (total): {final_mean_rise.strftime("%H:%M")}\n'
-            f'Mean Rise Time (weekdays): {mean_rise_time_weekdays}\n'
-            f'Mean Rise Time (weekends): {mean_rise_time_weekends}\n'
-            f'Daily Variability Rise Time: {rise_variability:.2f} hrs\n')
+            "Note : Les jours de fin de semaine sont le samedi et le dimanche,\n tandis que les nuits correspondent aux nuits du vendredi\n(menant au samedi matin)\n et du samedi (menant au dimanche matin)\n\n"
+            
+            f'Variabilité quotidienne de la durée de sommeil : {sleep_variability:.2f} h\n\n'
+            f'Heure moyenne d’endormissement (total) : {final_mean_onset.strftime("%H:%M")}\n'
+            f'Heure moyenne d’endormissement (semaine) : {mean_sleep_onset_weekdays}\n'
+            f'Heure moyenne d’endormissement (fin de semaine) : {mean_sleep_onset_weekends}\n'
+            f'Variabilité quotidienne de l’heure d’endormissement : {onset_variability:.2f} h\n\n'
+            f'Heure moyenne de réveil (total) : {final_mean_rise.strftime("%H:%M")}\n'
+            f'Heure moyenne de réveil (semaine) : {mean_rise_time_weekdays}\n'
+            f'Heure moyenne de réveil (fin de semaine) : {mean_rise_time_weekends}\n'
+            f'Variabilité quotidienne de l’heure de réveil : {rise_variability:.2f} h\n'
+)
 
         # Collect handles and labels
         h, l = axes[0, 1].get_legend_handles_labels()
@@ -481,7 +483,7 @@ for participant_id in list_of_IDs:
         markers = ['x' if d.weekday() >= 6 else 'o' for d in activity_df['Date']]
 
         # Plot all points with a continuous line
-        axes[1, 0].plot(activity_df['Date'], activity_df['Steps'], color='#B61826', label=r'Number of steps ($\bf{x: Sunday}$)')
+        axes[1, 0].plot(activity_df['Date'], activity_df['Steps'], color='#B61826', label=r'Nombre de pas ($\bf{x: Dimanche}$)')
         # axes[1, 0].legend(prop={'weight': 'bold'})
 
 
@@ -494,12 +496,12 @@ for participant_id in list_of_IDs:
         avg_steps_weekdays = activity_df[activity_df["Date"].dt.weekday < 5]["Steps"].mean()
         avg_steps_weekends = activity_df[activity_df["Date"].dt.weekday >= 5]["Steps"].mean()
 
-        axes[1, 0].axhline(avg_steps, linestyle='-', color='#B61826', label=f'Avg Steps (total): {avg_steps:.0f}')
-        axes[1, 0].axhline(avg_steps_weekdays, linestyle='--', color='#B61826', label=f'Avg Steps (weekdays): {avg_steps_weekdays:.0f}')
-        axes[1, 0].axhline(avg_steps_weekends, linestyle=':', color='#B61826', label=f'Avg Steps (weekends): {avg_steps_weekends:.0f}')
+        axes[1, 0].axhline(avg_steps, linestyle='-', color='#B61826', label=f'Nombre moyen de pas (total): {avg_steps:.0f}')
+        axes[1, 0].axhline(avg_steps_weekdays, linestyle='--', color='#B61826', label=f'Nombre moyen de pas (semaine): {avg_steps_weekdays:.0f}')
+        axes[1, 0].axhline(avg_steps_weekends, linestyle=':', color='#B61826', label=f'Nombre moyen de pas (fin de semaine): {avg_steps_weekends:.0f}')
         
-        axes[1, 0].set_ylabel('Steps')
-        axes[1, 0].set_title('Steps', fontsize=16, fontweight='bold')
+        axes[1, 0].set_ylabel('Nombre de pas')
+        axes[1, 0].set_title('Nombre de pas', fontsize=16, fontweight='bold')
 
 
 
@@ -539,21 +541,16 @@ for participant_id in list_of_IDs:
         
         
         # Add an underline using fig.text for precise positioning
-        fig.text(0, 0.89, '_' * 63, fontsize=50, color='black', ha='left')
+        fig.text(0, 0.90, '_' * 63, fontsize=50, color='black', ha='left')
 
         # Add the subtitle below the main title
-        if french_speaker == True:
-            plt.suptitle('Vos résultats complets', fontsize=50, fontweight='bold', ha='left', x=title_x, y=title_y)
 
-            fig.text(0, 0.78, 
-                "Informations provenant de la montre et des questionnaires depuis le début de l'étude.\nElles permettent de suivre les variations du sommeil, le nombre de pas, la sévérité des symptômes dépressifs (PHQ-9) et anxieux (GAD-7).\nSeules les données du dernier mois sont incluses dans le rapport de progression actuel.",
-                fontsize=25, ha='left')
-        else:
-            plt.suptitle('Your Complete Results', fontsize=50, fontweight='bold', ha='left', x=title_x, y=title_y)
+        plt.suptitle('Vos résultats complets', fontsize=50, fontweight='bold', ha='left', x=title_x, y=title_y)
 
-            fig.text(0, 0.78, 
-                'Information from the watch and questionnaires data since the beginning of the study.\nFrom it, we can track sleep variation, number of steps, depressive symptoms severity (PHQ-9), and anxiety symptoms severity (GAD-7).\nOnly data from the past month are included in the current progress report.',
-                fontsize=25, ha='left')
+        fig.text(0, 0.80, 
+            "Informations provenant de la montre et des questionnaires depuis le début de l'étude.\nElles permettent de suivre les variations du sommeil, le nombre de pas, la sévérité des symptômes dépressifs (PHQ-9) et anxieux (GAD-7).\nSeules les données du dernier mois sont incluses dans le rapport de progression actuel.",
+            fontsize=24, ha='left')
+
 
     
         # Adjust layout
@@ -630,14 +627,14 @@ for participant_id in list_of_IDs:
         # Set sleep and steps subplots as empty
         axes[0, 0].set_xticks([])
         axes[0, 0].set_yticks([])
-        axes[0, 0].set_ylabel('Time (Hours)')
-        axes[0, 0].set_title('Sleep', fontsize=16, fontweight='bold')
+        axes[0, 0].set_ylabel('Temps (Heures)')
+        axes[0, 0].set_title('Sommeil', fontsize=16, fontweight='bold')
 
 
         axes[1, 0].set_xticks([])
         axes[1, 0].set_yticks([])
-        axes[1, 0].set_ylabel('Steps')
-        axes[1, 0].set_title('Steps', fontsize=16, fontweight='bold')
+        axes[1, 0].set_ylabel('Nombre de pas')
+        axes[1, 0].set_title('Nombre de pas', fontsize=16, fontweight='bold')
         axes[1, 0].set_xticks(ticks=daily_date_range, labels=[d.strftime('%Y-%m-%d') if d in weekly_date_range else '' for d in daily_date_range], rotation=90)
         axes[1, 0].set_xlabel('Date')
 
@@ -653,10 +650,10 @@ for participant_id in list_of_IDs:
             axes[0, 1].axhspan(limits[0], limits[1], color=phq9_colors[idx], alpha=0.3, label=zone)
 
         # Plot all points with a continuous line
-        axes[0, 1].plot(phq9_df['date_phq9'], phq9_df['phq_9'], color='blue', marker='o', label='PHQ-9 Scores')
+        axes[0, 1].plot(phq9_df['date_phq9'], phq9_df['phq_9'], color='blue', marker='o', label='Scores PHQ-9')
 
         mean_phq9 = phq9_df['phq_9'].mean()
-        axes[0, 1].axhline(mean_phq9, linestyle='--', color='blue', label=f'Avg PHQ-9 Score: {mean_phq9:.2f}')
+        axes[0, 1].axhline(mean_phq9, linestyle='--', color='blue', label=f'Score PHQ-9 Moyen: {mean_phq9:.2f}')
 
         # Add annotations for PHQ-9 values within the filtered data
         for i, score in enumerate(phq9_df['phq_9']):
@@ -667,12 +664,12 @@ for participant_id in list_of_IDs:
                             xytext=(0, 10), ha='center')
 
 
-        axes[0, 1].set_ylabel('PHQ-9 Score')
+        axes[0, 1].set_ylabel('Score PHQ-9')
         axes[0, 1].set_xticks(ticks=daily_date_range, labels=[d.strftime('%Y-%m-%d') if d in weekly_date_range else '' for d in daily_date_range],rotation=90)
         axes[0, 1].set_yticks(np.arange(0, 28, 3))
         axes[0, 1].set_xlim(x_limits)
         axes[0, 1].set_ylim(0, 27)
-        axes[0, 1].set_title('PHQ-9 Scores', fontsize=16, fontweight='bold')
+        axes[0, 1].set_title('Scores PHQ-9', fontsize=16, fontweight='bold')
 
         # Custom legend title with detailed info
         title_text = (f'Participant DD_{participant_id}')
@@ -692,21 +689,21 @@ for participant_id in list_of_IDs:
             axes[1, 1].axhspan(limits[0], limits[1], color=gad7_colors[idx], alpha=0.3)
 
         # Plot all points with a continuous line
-        axes[1, 1].plot(gad7_df['date_gad7'], gad7_df['gad_7'], color='#CB6CE6', marker='o', label='GAD-7 Score')
+        axes[1, 1].plot(gad7_df['date_gad7'], gad7_df['gad_7'], color='#CB6CE6', marker='o', label='Scores GAD-7')
 
 
 
 
         mean_gad7 = gad7_df['gad_7'].mean()
-        axes[1, 1].axhline(mean_gad7, linestyle='--', color='#CB6CE6', label=f'Avg GAD-7 Score: {mean_gad7:.2f}')
+        axes[1, 1].axhline(mean_gad7, linestyle='--', color='#CB6CE6', label=f'Score GAD-7 Moyen: {mean_gad7:.2f}')
 
         # Add annotations for GAD-7 values
         for i, score in enumerate(gad7_df['gad_7']):
             if pd.notna(score):
                 axes[1, 1].annotate(f'{score:.0f}', (gad7_df['date_gad7'].iloc[i], score), textcoords="offset points", xytext=(0,10), ha='center')
 
-        axes[1, 1].set_title('GAD-7 Scores', fontsize=16, fontweight='bold')
-        axes[1, 1].set_ylabel('GAD-7 Score')
+        axes[1, 1].set_title('Scores GAD-7', fontsize=16, fontweight='bold')
+        axes[1, 1].set_ylabel('Scores GAD-7')
         axes[1, 1].set_ylim(0, 21)
         axes[1, 1].set_xlim(x_limits)
         axes[1, 1].set_yticks(np.arange(0, 19, 3))
@@ -736,18 +733,12 @@ for participant_id in list_of_IDs:
         # Add an underline using fig.text for precise positioning
         fig.text(0, 0.89, '_' * 63, fontsize=50, color='black', ha='left')
 
-        if french_speaker == True:
-            plt.suptitle('Vos résultats complets', fontsize=50, fontweight='bold', ha='left', x=title_x, y=title_y)
+        plt.suptitle('Vos résultats complets', fontsize=50, fontweight='bold', ha='left', x=title_x, y=title_y)
 
-            fig.text(0, 0.78, 
-                "Informations provenant de la montre et des questionnaires depuis le début de l'étude.\nElles permettent de suivre les variations du sommeil, le nombre de pas, la sévérité des symptômes dépressifs (PHQ-9) et anxieux (GAD-7).\nSeules les données du dernier mois sont incluses dans le rapport de progression actuel.",
-                fontsize=25, ha='left')
-        else:
-            plt.suptitle('Your Complete Results', fontsize=50, fontweight='bold', ha='left', x=title_x, y=title_y)
-
-            fig.text(0, 0.78, 
-                'Information from the watch and questionnaires data since the beginning of the study.\nFrom it, we can track sleep variation, number of steps, depressive symptoms severity (PHQ-9), and anxiety symptoms severity (GAD-7).\nOnly data from the past month are included in the current progress report.',
-                fontsize=25, ha='left')
+        fig.text(0, 0.78, 
+            "Informations provenant de la montre et des questionnaires depuis le début de l'étude.\nElles permettent de suivre les variations du sommeil, le nombre de pas, la sévérité des symptômes dépressifs (PHQ-9) et anxieux (GAD-7).\nSeules les données du dernier mois sont incluses dans le rapport de progression actuel.",
+            fontsize=25, ha='left')
+  
 
 
         # Adjust layout
